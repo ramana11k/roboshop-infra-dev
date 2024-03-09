@@ -51,165 +51,166 @@ resource "null_resource" "mongodb" {
 
 ###### redis ##########
 
-module "redis" {
-  source  = "terraform-aws-modules/ec2-instance/aws"  # it is the open source module
-  ami = data.aws_ami.centos8.id
-  name = "${local.ec2_name}-redis"
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [data.aws_ssm_parameter.redis_sg_id.value]
-  subnet_id              = local.database_subnet_id
+# module "redis" {
+#   source  = "terraform-aws-modules/ec2-instance/aws"  # it is the open source module
+#   ami = data.aws_ami.centos8.id
+#   name = "${local.ec2_name}-redis"
+#   instance_type          = "t2.micro"
+#   vpc_security_group_ids = [data.aws_ssm_parameter.redis_sg_id.value]
+#   subnet_id              = local.database_subnet_id
 
-  tags = merge(
-    var.common_tags,    
+#   tags = merge(
+#     var.common_tags,    
     
-    {
-      Component = "redis"
-    },
+#     {
+#       Component = "redis"
+#     },
     
-    {
-      Name = "${local.ec2_name}-redis"
-    }   
-  )
-}
+#     {
+#       Name = "${local.ec2_name}-redis"
+#     }   
+#   )
+# }
 
-resource "null_resource" "redis" {
-  # Changes to any instance of the cluster requires re-provisioning
-  triggers = {
-    instance_id = module.redis.id
-  }
+# resource "null_resource" "redis" {
+#   # Changes to any instance of the cluster requires re-provisioning
+#   triggers = {
+#     instance_id = module.redis.id
+#   }
 
-  # Bootstrap script can run on any instance of the cluster
-  # So we just choose the first in this case
-  connection {
-    host = module.redis.private_ip
-    type = "ssh"
-    user = "centos"
-    password = "DevOps321"
-  }
+#   # Bootstrap script can run on any instance of the cluster
+#   # So we just choose the first in this case
+#   connection {
+#     host = module.redis.private_ip
+#     type = "ssh"
+#     user = "centos"
+#     password = "DevOps321"
+#   }
 
- provisioner "file" {
-        source      = "bootstrap.sh"
-        destination = "/tmp/bootstrap.sh"
-      }
+#  provisioner "file" {
+#         source      = "bootstrap.sh"
+#         destination = "/tmp/bootstrap.sh"
+#       }
 
-  provisioner "remote-exec" {
-    # Bootstrap script called with private_ip of each node in the cluster
-    inline = [
-      "chmod +x /tmp/bootstrap.sh",
-      "sudo sh /tmp/bootstrap.sh redis dev"      
-    ]
-  }
-}
+#   provisioner "remote-exec" {
+#     # Bootstrap script called with private_ip of each node in the cluster
+#     inline = [
+#       "chmod +x /tmp/bootstrap.sh",
+#       "sudo sh /tmp/bootstrap.sh redis dev"      
+#     ]
+#   }
+# }
 
 
-# ########## mysql ###########
+# # ########## mysql ###########
 
-module "mysql" {
-  source  = "terraform-aws-modules/ec2-instance/aws"  # it is the open source module
-  ami = data.aws_ami.centos8.id
-  name = "${local.ec2_name}-mysql"
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [data.aws_ssm_parameter.mysql_sg_id.value]
-  subnet_id              = local.database_subnet_id
-  iam_instance_profile = "ShellScriptRoleForRoboshop"
+# module "mysql" {
+#   source  = "terraform-aws-modules/ec2-instance/aws"  # it is the open source module
+#   ami = data.aws_ami.centos8.id
+#   name = "${local.ec2_name}-mysql"
+#   instance_type          = "t2.micro"
+#   vpc_security_group_ids = [data.aws_ssm_parameter.mysql_sg_id.value]
+#   subnet_id              = local.database_subnet_id
+#   iam_instance_profile = "ShellScriptRoleForRoboshop"
 
-  tags = merge(
-    var.common_tags,    
+#   tags = merge(
+#     var.common_tags,    
     
-    {
-      Component = "mysql"
-    },
+#     {
+#       Component = "mysql"
+#     },
     
-    {
-      Name = "${local.ec2_name}-mysql"
-    }   
-  )
-}
+#     {
+#       Name = "${local.ec2_name}-mysql"
+#     }   
+#   )
+# }
 
-resource "null_resource" "mysql" {
-  # Changes to any instance of the cluster requires re-provisioning
-  triggers = {
-    instance_id = module.mysql.id
-  }
+# resource "null_resource" "mysql" {
+#   # Changes to any instance of the cluster requires re-provisioning
+#   triggers = {
+#     instance_id = module.mysql.id
+#   }
 
-  # Bootstrap script can run on any instance of the cluster
-  # So we just choose the first in this case
-  connection {
-    host = module.mysql.private_ip
-    type = "ssh"
-    user = "centos"
-    password = "DevOps321"
-  }
+#   # Bootstrap script can run on any instance of the cluster
+#   # So we just choose the first in this case
+#   connection {
+#     host = module.mysql.private_ip
+#     type = "ssh"
+#     user = "centos"
+#     password = "DevOps321"
+#   }
 
- provisioner "file" {
-        source      = "bootstrap.sh"
-        destination = "/tmp/bootstrap.sh"
-      }
+#  provisioner "file" {
+#         source      = "bootstrap.sh"
+#         destination = "/tmp/bootstrap.sh"
+#       }
 
-  provisioner "remote-exec" {
-    # Bootstrap script called with private_ip of each node in the cluster
-    inline = [
-      "chmod +x /tmp/bootstrap.sh",
-      "sudo sh /tmp/bootstrap.sh mysql dev"      
-    ]
-  }
-}
+#   provisioner "remote-exec" {
+#     # Bootstrap script called with private_ip of each node in the cluster
+#     inline = [
+#       "chmod +x /tmp/bootstrap.sh",
+#       "sudo sh /tmp/bootstrap.sh mysql dev"      
+#     ]
+#   }
+# }
 
 
-# ########## rabbitmq ###########
+# # ########## rabbitmq ###########
 
-module "rabbitmq" {
-  source  = "terraform-aws-modules/ec2-instance/aws"  # it is the open source module
-  ami = data.aws_ami.centos8.id
-  name = "${local.ec2_name}-rabbitmq"
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [data.aws_ssm_parameter.rabbitmq_sg_id.value]
-  subnet_id              = local.database_subnet_id
-  iam_instance_profile = "ShellScriptRoleForRoboshop"
+# module "rabbitmq" {
+#   source  = "terraform-aws-modules/ec2-instance/aws"  # it is the open source module
+#   ami = data.aws_ami.centos8.id
+#   name = "${local.ec2_name}-rabbitmq"
+#   instance_type          = "t2.micro"
+#   vpc_security_group_ids = [data.aws_ssm_parameter.rabbitmq_sg_id.value]
+#   subnet_id              = local.database_subnet_id
+#   iam_instance_profile = "ShellScriptRoleForRoboshop"
 
-  tags = merge(
-    var.common_tags,    
+#   tags = merge(
+#     var.common_tags,    
     
-    {
-      Component = "rabbitmq"
-    },
+#     {
+#       Component = "rabbitmq"
+#     },
     
-    {
-      Name = "${local.ec2_name}-rabbitmq"
-    }   
-  )
-}
+#     {
+#       Name = "${local.ec2_name}-rabbitmq"
+#     }   
+#   )
+# }
 
-resource "null_resource" "rabbitmq" {
-  # Changes to any instance of the cluster requires re-provisioning
-  triggers = {
-    instance_id = module.rabbitmq.id
-  }
+# resource "null_resource" "rabbitmq" {
+#   # Changes to any instance of the cluster requires re-provisioning
+#   triggers = {
+#     instance_id = module.rabbitmq.id
+#   }
 
-  # Bootstrap script can run on any instance of the cluster
-  # So we just choose the first in this case
-  connection {
-    host = module.rabbitmq.private_ip
-    type = "ssh"
-    user = "centos"
-    password = "DevOps321"
-  }
+#   # Bootstrap script can run on any instance of the cluster
+#   # So we just choose the first in this case
+#   connection {
+#     host = module.rabbitmq.private_ip
+#     type = "ssh"
+#     user = "centos"
+#     password = "DevOps321"
+#   }
 
- provisioner "file" {
-        source      = "bootstrap.sh"
-        destination = "/tmp/bootstrap.sh"
-      }
+#  provisioner "file" {
+#         source      = "bootstrap.sh"
+#         destination = "/tmp/bootstrap.sh"
+#       }
 
-  provisioner "remote-exec" {
-    # Bootstrap script called with private_ip of each node in the cluster
-    inline = [
-      "chmod +x /tmp/bootstrap.sh",
-      "sudo sh /tmp/bootstrap.sh rabbitmq dev"      
-    ]
-  }
-}
+#   provisioner "remote-exec" {
+#     # Bootstrap script called with private_ip of each node in the cluster
+#     inline = [
+#       "chmod +x /tmp/bootstrap.sh",
+#       "sudo sh /tmp/bootstrap.sh rabbitmq dev"      
+#     ]
+#   }
+# }
 
 #### route53records ####
+
 
 module "records" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
@@ -223,32 +224,42 @@ module "records" {
       records = [
         module.mongodb.private_ip,
       ]
-    },
-    {
-      name    = "redis-dev"
-      type    = "A"
-      ttl     = 1
-      records = [
-        module.redis.private_ip,
-      ]
-    },
-    {
-      name    = "mysql-dev"
-      type    = "A"
-      ttl     = 1
-      records = [
-        module.mysql.private_ip,
-      ]
-    },
-    {
-      name    = "rabbitmq-dev"
-      type    = "A"
-      ttl     = 1
-      records = [
-        module.rabbitmq.private_ip,
-      ]
-    },
+    }
   ]  
 }
+
+
+
+# module "records" {
+#   source  = "terraform-aws-modules/route53/aws//modules/records"
+#     zone_name = var.zone_name
+
+#   records = [        
+#     {
+#       name    = "redis-dev"
+#       type    = "A"
+#       ttl     = 1
+#       records = [
+#         module.redis.private_ip,
+#       ]
+#     },
+#     {
+#       name    = "mysql-dev"
+#       type    = "A"
+#       ttl     = 1
+#       records = [
+#         module.mysql.private_ip,
+#       ]
+#     },
+#     {
+#       name    = "rabbitmq-dev"
+#       type    = "A"
+#       ttl     = 1
+#       records = [
+#         module.rabbitmq.private_ip,
+#       ]
+#     },
+#   ]  
+# }
 
 

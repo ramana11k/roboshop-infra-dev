@@ -1,7 +1,7 @@
 resource "aws_ssm_parameter" "mongodb_sg_id" {
   name  = "/${var.project_name}/${var.environment}/mongodb_sg_id"
   type  = "String"
-  value = module.mongodb.sg_id
+  value = module.mongodb.sg_id  
 }
 
 resource "aws_ssm_parameter" "vpn_sg_id" {
@@ -73,3 +73,10 @@ resource "aws_ssm_parameter" "app_alb_sg_id" {
   type  = "String"
   value = module.app_alb.sg_id
 }
+
+resource "aws_ssm_parameter" "web_alb_sg_id" {
+  name  = "/${var.project_name}/${var.environment}/web_alb_sg_id"
+  type  = "String"
+  value = module.web_alb.sg_id
+}
+

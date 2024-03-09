@@ -20,8 +20,8 @@ data "aws_ami" "centos8" {
 }
 
 
-data "aws_ssm_parameter" "app_alb_sg_id" {
-  name  = "/${var.project_name}/${var.environment}/app_alb_sg_id"  
+data "aws_ssm_parameter" "web_alb_sg_id" {
+  name  = "/${var.project_name}/${var.environment}/web_alb_sg_id"  
 }
 
 data "aws_ssm_parameter" "private_subnet_id" {
@@ -35,11 +35,11 @@ data "aws_ssm_parameter" "vpc_id" {
 }
 
 
-data "aws_ssm_parameter" "catalogue_sg_id" {
-  name  = "/${var.project_name}/${var.environment}/catalogue_sg_id" 
+data "aws_ssm_parameter" "web_sg_id" {
+  name  = "/${var.project_name}/${var.environment}/web_sg_id" 
   
 }
 
-data "aws_ssm_parameter" "app_alb_listener_arn" {
-  name  = "/${var.project_name}/${var.environment}/app_alb_listener_arn"  
+data "aws_ssm_parameter" "web_alb_listener_arn" {
+  name  = "/${var.project_name}/${var.environment}/web_alb_listener_arn"  
 }

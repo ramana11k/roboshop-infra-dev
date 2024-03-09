@@ -159,6 +159,15 @@ resource "aws_security_group_rule" "app_alb_vpn" {
   protocol          = "tcp"
   source_security_group_id = module.vpn.sg_id
 }
+## session:38 - 33.18 # The app_alb should accept the connection from web
+resource "aws_security_group_rule" "app_alb_web" {
+  security_group_id = module.app_alb.sg_id  
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.web.sg_id
+}
 
 # openvpn security group rule to accept the connection from laptop/home
 resource "aws_security_group_rule" "vpn_home" {
@@ -419,7 +428,16 @@ resource "aws_security_group_rule" "payment_vpn" {
 # security group rule for "web" to accept connections from vpn, and internet
 
 resource "aws_security_group_rule" "web_vpn" {
-  security_group_id = module.web.sg_id  
+  security_group_id        = module.web.sg_id
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+}
+
+resource "aws_security_group_rule" "web_alb_vpn" {
+  security_group_id = module.web_alb.sg_id  
   type              = "ingress"
   from_port         = 22
   to_port           = 22
@@ -427,11 +445,11 @@ resource "aws_security_group_rule" "web_vpn" {
   source_security_group_id = module.vpn.sg_id
 }
 
-resource "aws_security_group_rule" "web_internet" {
-  security_group_id = module.web.sg_id  
+resource "aws_security_group_rule" "web_alb_internet" {
+  security_group_id = module.web_alb.sg_id  
   type              = "ingress"
-  from_port         = 80
-  to_port           = 80
+  from_port         = 443
+  to_port           = 443
   protocol          = "tcp"
   cidr_blocks = ["0.0.0.0/0"]  
 }
