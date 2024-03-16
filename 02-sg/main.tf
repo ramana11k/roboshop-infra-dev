@@ -169,6 +169,56 @@ resource "aws_security_group_rule" "app_alb_web" {
   source_security_group_id = module.web.sg_id
 }
 
+resource "aws_security_group_rule" "app_alb_cart" {
+  security_group_id = module.app_alb.sg_id  
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.cart.sg_id
+}
+
+
+resource "aws_security_group_rule" "app_alb_shipping" {
+  security_group_id = module.app_alb.sg_id  
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.shipping.sg_id
+}
+
+
+resource "aws_security_group_rule" "app_alb_payment" {
+  security_group_id = module.app_alb.sg_id  
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.payment.sg_id
+}
+
+
+resource "aws_security_group_rule" "app_alb_user" {
+  security_group_id = module.app_alb.sg_id  
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.user.sg_id
+}
+
+
+resource "aws_security_group_rule" "app_alb_catalogue" {
+  security_group_id = module.app_alb.sg_id  
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.catalogue.sg_id
+}
+
+
 # openvpn security group rule to accept the connection from laptop/home
 resource "aws_security_group_rule" "vpn_home" {
   security_group_id = module.vpn.sg_id  
@@ -339,6 +389,7 @@ resource "aws_security_group_rule" "user_vpn" {
   protocol          = "tcp"
   source_security_group_id = module.vpn.sg_id
 }
+
 resource "aws_security_group_rule" "user_app_alb" {
   security_group_id = module.user.sg_id  
   type              = "ingress"
@@ -357,6 +408,7 @@ resource "aws_security_group_rule" "cart_vpn" {
   protocol          = "tcp"
   source_security_group_id = module.vpn.sg_id
 }
+
 resource "aws_security_group_rule" "cart_app_alb" {
   security_group_id = module.cart.sg_id  
   type              = "ingress"
@@ -405,6 +457,16 @@ resource "aws_security_group_rule" "shipping_vpn" {
 #   source_security_group_id = module.web.sg_id
 # }
 
+
+resource "aws_security_group_rule" "shipping_app_alb" {
+  security_group_id = module.shipping.sg_id  
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.app_alb.sg_id
+}
+
 # security group rule for "payment" to accept connections from vpn, and web
 
 resource "aws_security_group_rule" "payment_vpn" {
@@ -424,6 +486,16 @@ resource "aws_security_group_rule" "payment_vpn" {
 #   protocol          = "tcp"
 #   source_security_group_id = module.web.sg_id
 # }
+
+
+resource "aws_security_group_rule" "payment_app_alb" {
+  security_group_id = module.payment.sg_id  
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.app_alb.sg_id
+}
 
 # security group rule for "web" to accept connections from vpn, and internet
 
