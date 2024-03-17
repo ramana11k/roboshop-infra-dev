@@ -20,16 +20,25 @@ variable "environment" {
     default = "dev"  
 }
 
+
+# variable "public_subnet_tags" {
+#     default = {}  
+# }
+
+# variable "private_subnet_tags" {
+#     default = {}  
+# }
+
+
+# variable "database_subnet_tags" {
+#     default = {}  
+# }
+
 variable "public_subnet_cidr" {
     type = list
     default = ["10.0.1.0/24", "10.0.2.0/24"]
        
 }
-
-variable "public_subnet_tags" {
-    default = {}  
-}
-
 
 variable "private_subnet_cidr" {
     type = list
@@ -37,9 +46,6 @@ variable "private_subnet_cidr" {
        
 }
 
-variable "private_subnet_tags" {
-    default = {}  
-}
 
 variable "database_subnet_cidr" {
     type = list
@@ -47,9 +53,6 @@ variable "database_subnet_cidr" {
        
 }
 
-variable "database_subnet_tags" {
-    default = {}  
-}
 
 variable "is_peering_required" {
     type = bool
