@@ -4,12 +4,17 @@ pipeline {
             label 'AGENT-1'
         }
     }
+
+    parameters {
+        choice(name: 'action', choices: ['apply', 'destroy'], description: 'Pick something')
+    }
     
     options {
         ansiColor('xterm')
         timeout(time: 1, unit: 'HOURS') 
         disableConcurrentBuilds() //It wont allow two builds at a time
     }
+
     
     //BUILD
     stages {
@@ -31,6 +36,11 @@ pipeline {
         }
         
         stage('Deploy') {
+
+            when {
+
+                "${params.action}" == 'apply'
+            }
             
             input {
                 message "Should we continue?"
@@ -45,6 +55,30 @@ pipeline {
                 sh """
                     cd 01-vpc
                     terraform apply -auto-approve
+                """   
+            }
+        }      
+
+        stage('Destroy') {
+
+            when {
+
+                "${params.action}" == 'destroy'
+            }
+            
+            input {
+                message "Should we continue?"
+                ok "Yes, we should."
+                // submitter "alice,bob"
+                // parameters {
+                //     string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+                // }
+            }
+            
+            steps {
+                sh """
+                    cd 01-vpc
+                    terraform destroy -auto-approve
                 """   
             }
         }        
